@@ -18,7 +18,7 @@ const contactSchema = z.object({
 const contactInfo = [
   {
     icon: Mail,
-    label: 'Email',
+    label: 'Emgvvl',
     value: 'hello@developer.com',
     href: 'mailto:hello@developer.com',
   },

@@ -89,7 +89,7 @@ export default function HeroSection() {
             className="flex items-center justify-center gap-6"
           >
             {[
-              { icon: Github, href: '#', label: 'GitHub' },
+              { icon: Github, href: '#', label: 'Gb' },
               { icon: Linkedin, href: '#', label: 'LinkedIn' },
               { icon: Youtube, href: '#', label: 'YouTube' },
               { icon: Instagram, href: '#', label: 'Instagram' },
