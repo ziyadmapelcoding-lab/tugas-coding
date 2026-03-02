@@ -17,7 +17,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll );
   }, []);
 
   const navItems = [
@@ -55,7 +55,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
             className="font-display text-xl md:text-2xl font-bold text-gradient cursor-pointer"
             whileHover={{ scale: 1.05 }}
           >
-            &lt;Dev /&gt;
+            Ziyad's Portofolio 
           </motion.a>
 
           {/* Desktop Navigation */}

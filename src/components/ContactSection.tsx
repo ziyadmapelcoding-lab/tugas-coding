@@ -1,57 +1,78 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mail, MapPin, Phone, Send, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-import { z } from 'zod';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Mail, MapPin, Phone, Send, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 
+// Validasi Form tetap dipertahankan agar data yang dikirim bersih
 const contactSchema = z.object({
-  name: z.string().trim().min(1, 'Nama harus diisi').max(100, 'Nama terlalu panjang'),
-  email: z.string().trim().email('Email tidak valid').max(255, 'Email terlalu panjang'),
-  subject: z.string().trim().min(1, 'Subjek harus diisi').max(200, 'Subjek terlalu panjang'),
-  message: z.string().trim().min(1, 'Pesan harus diisi').max(2000, 'Pesan terlalu panjang'),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Nama harus diisi")
+    .max(100, "Nama terlalu panjang"),
+  email: z
+    .string()
+    .trim()
+    .email("Email tidak valid")
+    .max(255, "Email terlalu panjang"),
+  subject: z
+    .string()
+    .trim()
+    .min(1, "Subjek harus diisi")
+    .max(200, "Subjek terlalu panjang"),
+  message: z
+    .string()
+    .trim()
+    .min(1, "Pesan harus diisi")
+    .max(2000, "Pesan terlalu panjang"),
 });
 
 const contactInfo = [
   {
     icon: Mail,
-    label: 'Emgvvl',
-    value: 'hello@developer.com',
-    href: 'mailto:hello@developer.com',
+    label: "Email",
+    value: "kindi.ziyad@gmail.com",
+    href: "https://mail.google.com/mail/u/0/?fs=1&to=kindi.ziyad@gmail.com&su=Contact%20from%20Portfolio&body=Hello%2C%20I%20would%20like%20to%20contact%20you.",
+    target: "_blank",
   },
   {
     icon: Phone,
-    label: 'Telepon',
-    value: '+62 812 3456 7890',
-    href: 'tel:+6281234567890',
+    label: "Telepon",
+    value: "+62 823-6173-9885",
+    href: "https://wa.me/6282361739885",
+    target: "_blank",
   },
   {
     icon: MapPin,
-    label: 'Lokasi',
-    value: 'Jakarta, Indonesia',
-    href: '#',
+    label: "Lokasi",
+    value: "Banda Aceh, Indonesia",
+    href: "https://share.google/NLN3qsYcj6gz8Nr6v",
+    target: "_blank",
   },
 ];
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -59,6 +80,7 @@ export default function ContactSection() {
     e.preventDefault();
     setErrors({});
 
+    // 1. Validasi Zod
     const result = contactSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -74,24 +96,33 @@ export default function ContactSection() {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: formData,
+      // 2. Kirim ke Formspree
+      const response = await fetch("https://formspree.io/f/xnjbyvjk", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(formData),
       });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error("Gagal mengirim pesan ke Formspree");
+      }
 
       toast({
-        title: 'Pesan Terkirim! ✨',
-        description: 'Terima kasih telah menghubungi saya. Saya akan membalas secepatnya.',
+        title: "Pesan Terkirim! ✨",
+        description: "Terima kasih. Pesan Anda sudah diteruskan ke email saya.",
       });
 
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error: any) {
-      console.error('Error sending email:', error);
+      // Reset form jika sukses
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error: unknown) {
+      console.error("Error sending email:", error);
       toast({
-        title: 'Gagal Mengirim',
-        description: 'Terjadi kesalahan. Silakan coba lagi atau hubungi langsung via email.',
-        variant: 'destructive',
+        title: "Gagal Mengirim",
+        description: "Terjadi kesalahan koneksi. Silakan hubungi via WhatsApp atau Email langsung.",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -99,7 +130,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-32">
+    <section id="contact" className="py-20 md:py-32 bg-gradient-hero">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -116,7 +147,7 @@ export default function ContactSection() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Contact Info */}
+          {/* Info Kontak Kiri */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -126,12 +157,10 @@ export default function ContactSection() {
           >
             <div>
               <h3 className="font-display text-2xl font-bold mb-4">
-                Mari Berkolaborasi!
+                Mari Berkonsultasi!
               </h3>
               <p className="text-muted-foreground leading-relaxed">
-                Punya project menarik atau ingin berkolaborasi? Jangan ragu untuk 
-                menghubungi saya. Saya selalu terbuka untuk diskusi tentang project 
-                baru, ide kreatif, atau kesempatan untuk menjadi bagian dari visi Anda.
+                Ingin meningkatkan keterampilan belajar Anda? Saya siap membantu Anda mencapai tujuan tersebut. Jangan ragu untuk menghubungi saya.
               </p>
             </div>
 
@@ -140,6 +169,8 @@ export default function ContactSection() {
                 <motion.a
                   key={info.label}
                   href={info.href}
+                  target={info.target}
+                  rel="noopener noreferrer"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -158,7 +189,7 @@ export default function ContactSection() {
             </div>
           </motion.div>
 
-          {/* Contact Form */}
+          {/* Form Kanan */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -168,25 +199,19 @@ export default function ContactSection() {
             <form onSubmit={handleSubmit} className="space-y-6 p-6 glass rounded-2xl shadow-card">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium">
-                    Nama
-                  </label>
+                  <label htmlFor="name" className="text-sm font-medium">Nama</label>
                   <Input
                     id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Nama Anda"
-                    className={errors.name ? 'border-destructive' : ''}
+                    className={errors.name ? "border-destructive" : ""}
                   />
-                  {errors.name && (
-                    <p className="text-xs text-destructive">{errors.name}</p>
-                  )}
+                  {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium">
-                    Email
-                  </label>
+                  <label htmlFor="email" className="text-sm font-medium">Email</label>
                   <Input
                     id="email"
                     name="email"
@@ -194,35 +219,27 @@ export default function ContactSection() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="email@example.com"
-                    className={errors.email ? 'border-destructive' : ''}
+                    className={errors.email ? "border-destructive" : ""}
                   />
-                  {errors.email && (
-                    <p className="text-xs text-destructive">{errors.email}</p>
-                  )}
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="subject" className="text-sm font-medium">
-                  Subjek
-                </label>
+                <label htmlFor="subject" className="text-sm font-medium">Subjek</label>
                 <Input
                   id="subject"
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
                   placeholder="Subjek pesan"
-                  className={errors.subject ? 'border-destructive' : ''}
+                  className={errors.subject ? "border-destructive" : ""}
                 />
-                {errors.subject && (
-                  <p className="text-xs text-destructive">{errors.subject}</p>
-                )}
+                {errors.subject && <p className="text-xs text-destructive">{errors.subject}</p>}
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="message" className="text-sm font-medium">
-                  Pesan
-                </label>
+                <label htmlFor="message" className="text-sm font-medium">Pesan</label>
                 <Textarea
                   id="message"
                   name="message"
@@ -230,11 +247,9 @@ export default function ContactSection() {
                   onChange={handleChange}
                   placeholder="Tuliskan pesan Anda..."
                   rows={5}
-                  className={errors.message ? 'border-destructive' : ''}
+                  className={errors.message ? "border-destructive" : ""}
                 />
-                {errors.message && (
-                  <p className="text-xs text-destructive">{errors.message}</p>
-                )}
+                {errors.message && <p className="text-xs text-destructive">{errors.message}</p>}
               </div>
 
               <Button
