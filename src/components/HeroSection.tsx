@@ -123,7 +123,7 @@ export default function HeroSection() {
               <img 
                 src="/Gambar untuk coding.png" 
                 alt="Foto Ziyad"
-                className="rounded-full object-cover w-full h-full border-4 border-primary/20 shadow-2xl z-20 relative"
+                className="rounded-full object-cover w-full h-full border-4 border-primary/20 shadow-2xl z-20 relative animate-float"
               />
               <div className="absolute -inset-6 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
             </div>
@@ -134,7 +134,7 @@ export default function HeroSection() {
 
       <motion.button
         onClick={scrollToAbout}
-        className="absolute bottom-5 -translate-x-1/2 p-3 rounded-full glass animate-float cursor-pointer"
+        className="absolute bottom-5 -translate-x-1/2 p-3 rounded-full glass animate-bounce cursor-pointer"
         whileHover={{ scale: 1.1 }}
         aria-label="Scroll to About"
       >
