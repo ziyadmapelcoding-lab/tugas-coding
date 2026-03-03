@@ -2,68 +2,123 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Github, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '../LanguageContext'; // Import context
 
-// 1. Data Proyek (Semua card sekarang akan menampilkan tombol Watch)
-const projects = [
-  {
-    title: 'Motivation',
-    description: 'Platform yang berisi kumpulan motivasi dan inspirasi untuk pelajar dengan berbagai kategori.',
-    tags: ['Self-Growth', 'Mental Health', 'Inspirasi'],
-    images: ['😎', '🌟', '✨', '🔥'], 
-    color: 'from-blue-500/20 to-cyan-500/20',
-    github: '#',
-    demo: '#',
-    youtube: '#', // Link video untuk Motivation
+// 1. Data Proyek dengan translasi
+const projectsData = {
+  id: {
+    badge: "Literasi",
+    title: "Proyek & Karya",
+    items: [
+      {
+        title: 'Motivation',
+        description: 'Platform yang berisi kumpulan motivasi dan inspirasi untuk pelajar dengan berbagai kategori.',
+        tags: ['Pengembangan Diri', 'Kesehatan Mental', 'Inspirasi'],
+        images: ['😎', '🌟', '✨', '🔥'], 
+        color: 'from-blue-500/20 to-cyan-500/20',
+        github: '#', demo: '#', youtube: '#',
+      },
+      {
+        title: 'Tips',
+        description: 'Platform yang berisi kumpulan tips seputar dunia pendidikan, belajar, dan pengembangan diri.',
+        tags: ['Trik Belajar', 'Produktivitas', 'Literasi Digital'],
+        images: ['🤓', '📚', '💡', '✍️'],
+        color: 'from-purple-500/20 to-pink-500/20',
+        github: '#', demo: '#', youtube: '#',
+      },
+      {
+        title: 'Tricks',
+        description: 'Platform yang berisi kumpulan trik untuk mempermudah proses belajar dan meningkatkan produktivitas.',
+        tags: ['Sains Data', 'Monitoring', 'Statistik'],
+        images: ['🤔', '🧪', '📊', '⚙️'],
+        color: 'from-orange-500/20 to-red-500/20',
+        github: '#', demo: '#', youtube: '#',
+      },
+      {
+        title: 'Education',
+        description: 'Platform yang berisi edukasi interaktif dengan berbagai kursus online dan materi pembelajaran.',
+        tags: ['Kursus Online', 'AI Learning', 'Interaktif'],
+        images: ['🧐', '🎓', '💻', '📖'],
+        color: 'from-green-500/20 to-teal-500/20',
+        github: '#', demo: '#', youtube: '#',
+      },
+      {
+        title: 'Tips & Tricks Videos',
+        description: 'Platfrom yang berisi kumpulan video tips dan trik mengenai cara belajar yang efektif dan efisien.',
+        tags: ['Belajar Efektif', 'Produktivitas', 'Tutorial'],
+        images: ['😮', '🎬', '📽️', '📺'],
+        color: 'from-red-500/20 to-orange-500/20',
+        isContent: true,
+        youtube: '#',
+      },
+      {
+        title: 'Literacy Videos',
+        description: 'Platfrom yang berisi kumpulan video edukasi mengenai berbagai macam literasi penting untuk pelajar.',
+        tags: ['Literasi Digital', 'Finansial', 'Media Sosial'],
+        images: ['😃', '📱', '🌍', '📰'],
+        color: 'from-cyan-500/20 to-blue-500/20',
+        isContent: true,
+        youtube: '#',
+      },
+    ]
   },
-  {
-    title: 'Tips',
-    description: 'Platform yang berisi kumpulan tips seputar dunia pendidikan, belajar, dan pengembangan diri.',
-    tags: ['Study Hacks', 'Productivity', 'Literasi Digital'],
-    images: ['🤓', '📚', '💡', '✍️'],
-    color: 'from-purple-500/20 to-pink-500/20',
-    github: '#',
-    demo: '#',
-    youtube: '#', // Link video untuk Tips
-  },
-  {
-    title: 'Tricks',
-    description: 'Platform yang berisi kumpulan trik untuk mempermudah proses belajar dan meningkatkan produktivitas.',
-    tags: ['Data Science', 'Monitoring', 'Statistik'],
-    images: ['🤔', '🧪', '📊', '⚙️'],
-    color: 'from-orange-500/20 to-red-500/20',
-    github: '#',
-    demo: '#',
-    youtube: '#', // Link video untuk Tricks
-  },
-  {
-    title: 'Education',
-    description: 'Platform yang berisi edukasi interaktif dengan berbagai kursus online dan materi pembelajaran.',
-    tags: ['Kursus Online', 'AI Learning', 'Interaktif'],
-    images: ['🧐', '🎓', '💻', '📖'],
-    color: 'from-green-500/20 to-teal-500/20',
-    github: '#',
-    demo: '#',
-    youtube: '#', // Link video untuk Education
-  },
-  {
-    title: 'Tips & Tricks Videos',
-    description: 'Platfrom yang berisi kumpulan video tips dan trik mengenai cara belajar yang efektif dan efisien.',
-    tags: ['Belajar Efektif', 'Produktivitas', 'Tutorial'],
-    images: ['😮', '🎬', '📽️', '📺'],
-    color: 'from-red-500/20 to-orange-500/20',
-    isContent: true,
-    youtube: '#',
-  },
-  {
-    title: 'Literacy Videos',
-    description: 'Platfrom yang berisi kumpulan video edukasi mengenai berbagai macam literasi penting untuk pelajar.',
-    tags: ['Digital Literacy', 'Financial', 'Social Media'],
-    images: ['😃', '📱', '🌍', '📰'],
-    color: 'from-cyan-500/20 to-blue-500/20',
-    isContent: true,
-    youtube: '#',
-  },
-];
+  en: {
+    badge: "Literacy",
+    title: "Projects & Works",
+    items: [
+      {
+        title: 'Motivation',
+        description: 'A platform containing a collection of motivation and inspiration for students across various categories.',
+        tags: ['Self-Growth', 'Mental Health', 'Inspiration'],
+        images: ['😎', '🌟', '✨', '🔥'], 
+        color: 'from-blue-500/20 to-cyan-500/20',
+        github: '#', demo: '#', youtube: '#',
+      },
+      {
+        title: 'Tips',
+        description: 'A platform featuring a collection of tips about education, learning, and self-development.',
+        tags: ['Study Hacks', 'Productivity', 'Digital Literacy'],
+        images: ['🤓', '📚', '💡', '✍️'],
+        color: 'from-purple-500/20 to-pink-500/20',
+        github: '#', demo: '#', youtube: '#',
+      },
+      {
+        title: 'Tricks',
+        description: 'A platform containing tricks to simplify the learning process and boost productivity.',
+        tags: ['Data Science', 'Monitoring', 'Statistics'],
+        images: ['🤔', '🧪', '📊', '⚙️'],
+        color: 'from-orange-500/20 to-red-500/20',
+        github: '#', demo: '#', youtube: '#',
+      },
+      {
+        title: 'Education',
+        description: 'An interactive education platform with various online courses and learning materials.',
+        tags: ['Online Courses', 'AI Learning', 'Interactive'],
+        images: ['🧐', '🎓', '💻', '📖'],
+        color: 'from-green-500/20 to-teal-500/20',
+        github: '#', demo: '#', youtube: '#',
+      },
+      {
+        title: 'Tips & Tricks Videos',
+        description: 'A platform featuring a video collection of tips and tricks on effective and efficient learning methods.',
+        tags: ['Effective Learning', 'Productivity', 'Tutorial'],
+        images: ['😮', '🎬', '📽️', '📺'],
+        color: 'from-red-500/20 to-orange-500/20',
+        isContent: true,
+        youtube: '#',
+      },
+      {
+        title: 'Literacy Videos',
+        description: 'A platform containing educational videos about various essential literacies for students.',
+        tags: ['Digital Literacy', 'Financial', 'Social Media'],
+        images: ['😃', '📱', '🌍', '📰'],
+        color: 'from-cyan-500/20 to-blue-500/20',
+        isContent: true,
+        youtube: '#',
+      },
+    ]
+  }
+};
 
 // 2. Sub-Komponen CardCarousel
 function CardCarousel({ images, color }: { images: string[], color: string }) {
@@ -126,17 +181,20 @@ function CardCarousel({ images, color }: { images: string[], color: string }) {
 
 // 3. Komponen Utama
 export default function ProjectsSection() {
+  const { lang } = useLanguage();
+  const t = projectsData[lang];
+
   return (
     <section id="projects" className="py-20 md:py-32 bg-gradient-hero">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-                    <span className="text-primary font-medium mb-2 block">Literasi</span>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">Proyek & Karya</h2>
+          <span className="text-primary font-medium mb-2 block">{t.badge}</span>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">{t.title}</h2>
           <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-          {projects.map((project, index) => (
+          {t.items.map((project, index) => (
             <motion.div
               key={project.title}
               initial={{ opacity: 0, y: 30 }}
@@ -172,15 +230,13 @@ export default function ProjectsSection() {
                   </div>
                   
                   <div className="flex flex-wrap gap-2 pt-2">
-                    {/* Tombol Watch (Sekarang muncul di semua card) */}
                     <Button size="sm" className="rounded-full bg-[#14b8a6] hover:bg-[#0d9488] text-white" asChild>
                       <a href={project.youtube}>
                         <Play className="h-4 w-4 mr-1 fill-current" />
-                        Watch
+                        {lang === 'id' ? 'Tonton' : 'Watch'}
                       </a>
                     </Button>
 
-                    {/* Tombol Code & Demo (Opsional sesuai data) */}
                     {project.github && project.github !== '#' && (
                       <Button variant="outline" size="sm" className="rounded-full" asChild>
                         <a href={project.github}><Github className="h-4 w-4 mr-1" /> Code</a>

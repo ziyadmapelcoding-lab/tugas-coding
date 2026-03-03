@@ -1,24 +1,54 @@
 import { motion } from 'framer-motion';
+import { useLanguage } from '../LanguageContext'; // Import context
 
-const skills = {
-  Bahasa: [
-    { name: 'Bahasa Indonesia', level: 97 },
-    { name: 'Bahasa Inggris', level: 90 },
-    { name: 'Bahasa Arab', level: 85 },
-    { name: 'Bahasa Jepang', level: 70 },
-  ],
-  IPS: [
-    { name: 'Sosiologi', level: 90 },
-    { name: 'Ekonomi', level: 85 },
-    { name: 'Geografi', level: 88 },
-    { name: 'Sejarah', level: 82 },
-  ],
-  IPA: [
-    { name: 'Biologi', level: 95 },
-    { name: 'Kimia', level: 80 },
-    { name: 'Fisika', level: 75 },
-    { name: 'Matematika', level: 85 },
-  ],
+// Data translasi untuk Skills
+const skillsTranslations = {
+  id: {
+    badge: "Keahlian",
+    title: "Kemampuan Akademis",
+    categories: {
+      language: "Bahasa",
+      social: "IPS",
+      science: "IPA"
+    },
+    items: {
+      indonesian: "Bahasa Indonesia",
+      english: "Bahasa Inggris",
+      arabic: "Bahasa Arab",
+      japanese: "Bahasa Jepang",
+      sociology: "Sosiologi",
+      economy: "Ekonomi",
+      geography: "Geografi",
+      history: "Sejarah",
+      biology: "Biologi",
+      chemistry: "Kimia",
+      physics: "Fisika",
+      math: "Matematika"
+    }
+  },
+  en: {
+    badge: "Skills",
+    title: "Academic Proficiency",
+    categories: {
+      language: "Languages",
+      social: "Social Science",
+      science: "Natural Science"
+    },
+    items: {
+      indonesian: "Indonesian",
+      english: "English",
+      arabic: "Arabic",
+      japanese: "Japanese",
+      sociology: "Sociology",
+      economy: "Economics",
+      geography: "Geography",
+      history: "History",
+      biology: "Biology",
+      chemistry: "Chemistry",
+      physics: "Physics",
+      math: "Mathematics"
+    }
+  }
 };
 
 function SkillBar({ name, level, delay }: { name: string; level: number; delay: number }) {
@@ -48,6 +78,31 @@ function SkillBar({ name, level, delay }: { name: string; level: number; delay: 
 }
 
 export default function SkillsSection() {
+  const { lang } = useLanguage();
+  const t = skillsTranslations[lang];
+
+  // Susun ulang data skills berdasarkan bahasa yang dipilih
+  const skillsData = {
+    Bahasa: [
+      { name: t.items.indonesian, level: 97 },
+      { name: t.items.english, level: 90 },
+      { name: t.items.arabic, level: 85 },
+      { name: t.items.japanese, level: 70 },
+    ],
+    IPS: [
+      { name: t.items.sociology, level: 90 },
+      { name: t.items.economy, level: 85 },
+      { name: t.items.geography, level: 88 },
+      { name: t.items.history, level: 82 },
+    ],
+    IPA: [
+      { name: t.items.biology, level: 95 },
+      { name: t.items.chemistry, level: 80 },
+      { name: t.items.physics, level: 75 },
+      { name: t.items.math, level: 85 },
+    ],
+  };
+
   return (
     <section id="skills" className="py-20 md:py-32 bg-gradient-hero">
       <div className="container mx-auto px-4">
@@ -58,15 +113,15 @@ export default function SkillsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-primary font-medium mb-2 block">Keahlian</span>
+          <span className="text-primary font-medium mb-2 block">{t.badge}</span>
           <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-            Kemampuan Akademis
+            {t.title}
           </h2>
           <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Frontend */}
+          {/* Bahasa / Languages */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -78,16 +133,16 @@ export default function SkillsSection() {
               <div className="p-3 rounded-xl bg-primary/10">
                 <span className="text-2xl">🗣️</span>
               </div>
-              <h3 className="font-display text-xl font-bold">Bahasa</h3>
+              <h3 className="font-display text-xl font-bold">{t.categories.language}</h3>
             </div>
             <div className="space-y-4">
-              {skills.Bahasa.map((skill, index) => (
+              {skillsData.Bahasa.map((skill, index) => (
                 <SkillBar key={skill.name} {...skill} delay={index * 0.1} />
               ))}
             </div>
           </motion.div>
 
-          {/* Backend */}
+          {/* IPS / Social Studies */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -99,16 +154,16 @@ export default function SkillsSection() {
               <div className="p-3 rounded-xl bg-primary/10">
                 <span className="text-2xl">🌏</span>
               </div>
-              <h3 className="font-display text-xl font-bold">IPS</h3>
+              <h3 className="font-display text-xl font-bold">{t.categories.social}</h3>
             </div>
             <div className="space-y-4">
-              {skills.IPS.map((skill, index) => (
+              {skillsData.IPS.map((skill, index) => (
                 <SkillBar key={skill.name} {...skill} delay={index * 0.1} />
               ))}
             </div>
           </motion.div>
 
-          {/* Tools */}
+          {/* IPA / Science */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -120,10 +175,10 @@ export default function SkillsSection() {
               <div className="p-3 rounded-xl bg-primary/10">
                 <span className="text-2xl">🧠</span>
               </div>
-              <h3 className="font-display text-xl font-bold">IPA</h3>
+              <h3 className="font-display text-xl font-bold">{t.categories.science}</h3>
             </div>
             <div className="space-y-4">
-              {skills.IPA.map((skill, index) => (
+              {skillsData.IPA.map((skill, index) => (
                 <SkillBar key={skill.name} {...skill} delay={index * 0.1} />
               ))}
             </div>

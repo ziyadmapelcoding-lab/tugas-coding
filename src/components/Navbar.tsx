@@ -1,7 +1,28 @@
 import { useState, useEffect } from 'react';
-import { Moon, Sun, Menu, X } from 'lucide-react';
+import { Moon, Sun, Menu, X, Languages } from 'lucide-react'; // Tambah icon Languages
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../LanguageContext'; // Import context
+
+// Objek translasi khusus Navbar
+const translations = {
+  id: {
+    title: "Portofolio Ziyad",
+    home: "Beranda",
+    about: "Tentang",
+    skills: "Keahlian",
+    projects: "Proyek",
+    contact: "Kontak",
+  },
+  en: {
+    title: "Ziyad's Portfolio",
+    home: "Home",
+    about: "About",
+    skills: "Skills",
+    projects: "Projects",
+    contact: "Contact",
+  }
+};
 
 interface NavbarProps {
   isDark: boolean;
@@ -11,21 +32,26 @@ interface NavbarProps {
 export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  // Mengambil state bahasa dari Context
+  const { lang, toggleLanguage } = useLanguage();
+  const t = translations[lang];
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll );
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Update label navItems menggunakan translasi
   const navItems = [
-    { label: 'Home', href: '#home' },
-    { label: 'About', href: '#about' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Contact', href: '#contact' },
+    { label: t.home, href: '#home' },
+    { label: t.about, href: '#about' },
+    { label: t.skills, href: '#skills' },
+    { label: t.projects, href: '#projects' },
+    { label: t.contact, href: '#contact' },
   ];
 
   const scrollToSection = (href: string) => {
@@ -55,11 +81,11 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
             className="font-display text-xl md:text-2xl font-bold text-gradient cursor-pointer"
             whileHover={{ scale: 1.05 }}
           >
-            Ziyad's Portofolio 
+            {t.title}
           </motion.a>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             {navItems.map((item) => (
               <motion.a
                 key={item.label}
@@ -74,38 +100,61 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
                 {item.label}
               </motion.a>
             ))}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-full"
-            >
-              <AnimatePresence mode="wait">
-                {isDark ? (
-                  <motion.div
-                    key="sun"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                  >
-                    <Sun className="h-5 w-5" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="moon"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                  >
-                    <Moon className="h-5 w-5" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Button>
+
+            <div className="flex items-center gap-2 border-l pl-6 border-border">
+              {/* Tombol Translate */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleLanguage}
+                className="flex items-center gap-2 font-bold"
+              >
+                <Languages className="h-4 w-4" />
+                {lang === 'id' ? 'EN' : 'ID'}
+              </Button>
+
+              {/* Tombol Theme */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-full"
+              >
+                <AnimatePresence mode="wait">
+                  {isDark ? (
+                    <motion.div
+                      key="sun"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                    >
+                      <Sun className="h-5 w-5" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="moon"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                    >
+                      <Moon className="h-5 w-5" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleLanguage}
+              className="font-bold text-xs"
+            >
+              {lang === 'id' ? 'EN' : 'ID'}
+            </Button>
             <Button
               variant="ghost"
               size="icon"

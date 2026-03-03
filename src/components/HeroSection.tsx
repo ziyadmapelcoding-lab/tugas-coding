@@ -2,8 +2,33 @@ import { motion } from 'framer-motion';
 import { ArrowDown, Github, Linkedin, Youtube, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThreeScene from './ThreeScene';
+import { useLanguage } from '../LanguageContext'; // Step 4: Import context
+
+// Objek translasi khusus untuk HeroSection
+const heroTranslations = {
+  id: {
+    welcome: "Selamat Datang",
+    greeting: "Hai👋",
+    subGreeting: "Salam Kenal",
+    description: "Saya membangun aplikasi web yang menarik dan interaktif, serta membagikan pengalaman belajar yang inspiratif.",
+    viewProjects: "Lihat Projects",
+    contactMe: "Hubungi Saya",
+  },
+  en: {
+    welcome: "Welcome",
+    greeting: "Hi there👋",
+    subGreeting: "Nice to Meet You",
+    description: "I build engaging and interactive web applications, while sharing inspiring learning experiences.",
+    viewProjects: "View Projects",
+    contactMe: "Contact Me",
+  }
+};
 
 export default function HeroSection() {
+  // Ambil bahasa yang sedang aktif
+  const { lang } = useLanguage();
+  const t = heroTranslations[lang];
+
   const scrollToAbout = () => {
     const element = document.querySelector('#about');
     if (element) {
@@ -15,7 +40,7 @@ export default function HeroSection() {
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
       <ThreeScene />
       
-<div className="container mx-auto px-4 relative z-10 pt-6 md:pt-8">
+      <div className="container mx-auto px-4 relative z-10 pt-6 md:pt-8">
         
         <div className="flex justify-center w-full mb-8 md:mb-12">
           <motion.div
@@ -29,7 +54,7 @@ export default function HeroSection() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
             >
-              Selamat Datang 
+              {t.welcome} {/* Menggunakan translasi */}
             </motion.span>
           </motion.div>
         </div>
@@ -43,9 +68,9 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
             >
-              Hai👋
+              {t.greeting}
               <br />
-              <span className="text-gradient"> Salam Kenal </span>
+              <span className="text-gradient"> {t.subGreeting} </span>
             </motion.h1>
 
             <motion.p
@@ -54,8 +79,7 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.5 }}
               className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto md:mx-0"
             >
-              Saya membangun aplikasi web yang menarik dan interaktif,            
-              serta membagikan pengalaman belajar yang inspiratif.
+              {t.description}
             </motion.p>
 
             <motion.div
@@ -72,7 +96,7 @@ export default function HeroSection() {
                   if (element) element.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                Lihat Projects
+                {t.viewProjects}
               </Button>
               <Button 
                 variant="outline" 
@@ -83,7 +107,7 @@ export default function HeroSection() {
                   if (element) element.scrollIntoView({ behavior: 'smooth' });
                 }}
               >
-                Hubungi Saya
+                {t.contactMe}
               </Button>
             </motion.div>
 

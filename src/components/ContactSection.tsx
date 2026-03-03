@@ -6,56 +6,76 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { useLanguage } from "..//LanguageContext"; // Step 4: Import context
 
-// Validasi Form tetap dipertahankan agar data yang dikirim bersih
-const contactSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Nama harus diisi")
-    .max(100, "Nama terlalu panjang"),
-  email: z
-    .string()
-    .trim()
-    .email("Email tidak valid")
-    .max(255, "Email terlalu panjang"),
-  subject: z
-    .string()
-    .trim()
-    .min(1, "Subjek harus diisi")
-    .max(200, "Subjek terlalu panjang"),
-  message: z
-    .string()
-    .trim()
-    .min(1, "Pesan harus diisi")
-    .max(2000, "Pesan terlalu panjang"),
-});
-
-const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "kindi.ziyad@gmail.com",
-    href: "https://mail.google.com/mail/u/0/?fs=1&to=kindi.ziyad@gmail.com&su=Contact%20from%20Portfolio&body=Hello%2C%20I%20would%20like%20to%20contact%20you.",
-    target: "_blank",
+// 1. Data Translasi
+const contactTranslations = {
+  id: {
+    badge: "Kontak",
+    title: "Hubungi Saya",
+    subTitle: "Mari Berkonsultasi!",
+    description: "Ingin meningkatkan keterampilan belajar Anda? Saya siap membantu Anda mencapai tujuan tersebut. Jangan ragu untuk menghubungi saya.",
+    form: {
+      name: "Nama",
+      namePlaceholder: "Nama Anda",
+      email: "Email",
+      emailPlaceholder: "email@contoh.com",
+      subject: "Subjek",
+      subjectPlaceholder: "Subjek pesan",
+      message: "Pesan",
+      messagePlaceholder: "Tuliskan pesan Anda...",
+      send: "Kirim Pesan",
+      sending: "Mengirim...",
+    },
+    toast: {
+      successTitle: "Pesan Terkirim! ✨",
+      successDesc: "Terima kasih. Pesan Anda sudah diteruskan ke email saya.",
+      errorTitle: "Gagal Mengirim",
+      errorDesc: "Terjadi kesalahan koneksi. Silakan hubungi via WhatsApp atau Email langsung.",
+    },
+    validation: {
+      name: "Nama harus diisi",
+      email: "Email tidak valid",
+      subject: "Subjek harus diisi",
+      message: "Pesan harus diisi",
+    }
   },
-  {
-    icon: Phone,
-    label: "Telepon",
-    value: "+62 823-6173-9885",
-    href: "https://wa.me/6282361739885",
-    target: "_blank",
-  },
-  {
-    icon: MapPin,
-    label: "Lokasi",
-    value: "Banda Aceh, Indonesia",
-    href: "https://share.google/NLN3qsYcj6gz8Nr6v",
-    target: "_blank",
-  },
-];
+  en: {
+    badge: "Contact",
+    title: "Get In Touch",
+    subTitle: "Let's Consult!",
+    description: "Want to improve your learning skills? I am ready to help you achieve those goals. Feel free to contact me.",
+    form: {
+      name: "Name",
+      namePlaceholder: "Your Name",
+      email: "Email",
+      emailPlaceholder: "email@example.com",
+      subject: "Subject",
+      subjectPlaceholder: "Message subject",
+      message: "Message",
+      messagePlaceholder: "Write your message...",
+      send: "Send Message",
+      sending: "Sending...",
+    },
+    toast: {
+      successTitle: "Message Sent! ✨",
+      successDesc: "Thank you. Your message has been forwarded to my email.",
+      errorTitle: "Failed to Send",
+      errorDesc: "Connection error. Please contact me via WhatsApp or Email directly.",
+    },
+    validation: {
+      name: "Name is required",
+      email: "Invalid email",
+      subject: "Subject is required",
+      message: "Message is required",
+    }
+  }
+};
 
 export default function ContactSection() {
+  const { lang } = useLanguage();
+  const t = contactTranslations[lang];
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -66,9 +86,39 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  // Validasi Form menggunakan pesan dari translasi
+  const contactSchema = z.object({
+    name: z.string().trim().min(1, t.validation.name),
+    email: z.string().trim().email(t.validation.email),
+    subject: z.string().trim().min(1, t.validation.subject),
+    message: z.string().trim().min(1, t.validation.message),
+  });
+
+  const contactInfo = [
+    {
+      icon: Mail,
+      label: "Email",
+      value: "kindi.ziyad@gmail.com",
+      href: "https://mail.google.com/mail/u/0/?fs=1&to=kindi.ziyad@gmail.com&su=Contact%20from%20Portfolio&body=Hello%2C%20I%20would%20like%20to%20contact%20you.",
+      target: "_blank",
+    },
+    {
+      icon: Phone,
+      label: lang === 'id' ? "Telepon" : "Phone",
+      value: "+62 823-6173-9885",
+      href: "https://wa.me/6282361739885",
+      target: "_blank",
+    },
+    {
+      icon: MapPin,
+      label: lang === 'id' ? "Lokasi" : "Location",
+      value: "Banda Aceh, Indonesia",
+      href: "https://share.google/NLN3qsYcj6gz8Nr6v",
+      target: "_blank",
+    },
+  ];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
@@ -80,48 +130,36 @@ export default function ContactSection() {
     e.preventDefault();
     setErrors({});
 
-    // 1. Validasi Zod
     const result = contactSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0] as string] = err.message;
-        }
+        if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
       });
       setErrors(fieldErrors);
       return;
     }
 
     setIsSubmitting(true);
-
     try {
-      // 2. Kirim ke Formspree
       const response = await fetch("https://formspree.io/f/xnjbyvjk", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        throw new Error("Gagal mengirim pesan ke Formspree");
-      }
+      if (!response.ok) throw new Error();
 
       toast({
-        title: "Pesan Terkirim! ✨",
-        description: "Terima kasih. Pesan Anda sudah diteruskan ke email saya.",
+        title: t.toast.successTitle,
+        description: t.toast.successDesc,
       });
 
-      // Reset form jika sukses
       setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (error: unknown) {
-      console.error("Error sending email:", error);
+    } catch (error) {
       toast({
-        title: "Gagal Mengirim",
-        description: "Terjadi kesalahan koneksi. Silakan hubungi via WhatsApp atau Email langsung.",
+        title: t.toast.errorTitle,
+        description: t.toast.errorDesc,
         variant: "destructive",
       });
     } finally {
@@ -139,15 +177,13 @@ export default function ContactSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-primary font-medium mb-2 block">Kontak</span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-            Hubungi Saya
-          </h2>
+          <span className="text-primary font-medium mb-2 block">{t.badge}</span>
+          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">{t.title}</h2>
           <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-          {/* Info Kontak Kiri */}
+          {/* Kiri */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -156,12 +192,8 @@ export default function ContactSection() {
             className="space-y-8"
           >
             <div>
-              <h3 className="font-display text-2xl font-bold mb-4">
-                Mari Berkonsultasi!
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Ingin meningkatkan keterampilan belajar Anda? Saya siap membantu Anda mencapai tujuan tersebut. Jangan ragu untuk menghubungi saya.
-              </p>
+              <h3 className="font-display text-2xl font-bold mb-4">{t.subTitle}</h3>
+              <p className="text-muted-foreground leading-relaxed">{t.description}</p>
             </div>
 
             <div className="space-y-4">
@@ -171,10 +203,6 @@ export default function ContactSection() {
                   href={info.href}
                   target={info.target}
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
                   className="flex items-center gap-4 p-4 glass rounded-xl hover:shadow-card-hover transition-all group"
                 >
                   <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -189,7 +217,7 @@ export default function ContactSection() {
             </div>
           </motion.div>
 
-          {/* Form Kanan */}
+          {/* Kanan */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -199,26 +227,24 @@ export default function ContactSection() {
             <form onSubmit={handleSubmit} className="space-y-6 p-6 glass rounded-2xl shadow-card">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label htmlFor="name" className="text-sm font-medium">Nama</label>
+                  <label className="text-sm font-medium">{t.form.name}</label>
                   <Input
-                    id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Nama Anda"
+                    placeholder={t.form.namePlaceholder}
                     className={errors.name ? "border-destructive" : ""}
                   />
                   {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium">Email</label>
+                  <label className="text-sm font-medium">{t.form.email}</label>
                   <Input
-                    id="email"
                     name="email"
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="email@example.com"
+                    placeholder={t.form.emailPlaceholder}
                     className={errors.email ? "border-destructive" : ""}
                   />
                   {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
@@ -226,48 +252,35 @@ export default function ContactSection() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="subject" className="text-sm font-medium">Subjek</label>
+                <label className="text-sm font-medium">{t.form.subject}</label>
                 <Input
-                  id="subject"
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  placeholder="Subjek pesan"
+                  placeholder={t.form.subjectPlaceholder}
                   className={errors.subject ? "border-destructive" : ""}
                 />
                 {errors.subject && <p className="text-xs text-destructive">{errors.subject}</p>}
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="message" className="text-sm font-medium">Pesan</label>
+                <label className="text-sm font-medium">{t.form.message}</label>
                 <Textarea
-                  id="message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="Tuliskan pesan Anda..."
+                  placeholder={t.form.messagePlaceholder}
                   rows={5}
                   className={errors.message ? "border-destructive" : ""}
                 />
                 {errors.message && <p className="text-xs text-destructive">{errors.message}</p>}
               </div>
 
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full rounded-full"
-                disabled={isSubmitting}
-              >
+              <Button type="submit" size="lg" className="w-full rounded-full" disabled={isSubmitting}>
                 {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Mengirim...
-                  </>
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> {t.form.sending}</>
                 ) : (
-                  <>
-                    <Send className="h-4 w-4 mr-2" />
-                    Kirim Pesan
-                  </>
+                  <><Send className="h-4 w-4 mr-2" /> {t.form.send}</>
                 )}
               </Button>
             </form>
