@@ -84,9 +84,9 @@
 
     /* Custom tokens dark */
     --gradient-primary: linear-gradient(135deg, hsl(175 80% 50%), hsl(200 80% 60%));
-    --gradient-hero: linear-gradient(180deg, hsl(175, 80%, 15%) 0%, hsl(175, 40%, 15%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(0, 0%, 25%) 0%, hsl(0, 5%, 29%) 100%);
     --shadow-glow: 0 0 60px hsl(175 80% 50% / 0.4);
-    --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 4px 20px hsl(0 0% 0% / 10%);
     --shadow-card-hover: 0 8px 30px hsl(175 80% 50% / 0.15);
 
     --sidebar-background: 220 25% 8%;
